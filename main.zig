@@ -17,7 +17,9 @@ pub fn main() !void {
 
     try wlr.SDK.startRuntime(.{
         .app_type = .Executable,
+        .license_mode = .LicenseOrSignedCode,
         .layout_dir = "/Applications/Wolfram.app/Contents",
+        .containment_mode = .Uncontained,
     });
 
     const head = try wlr.Expr.symbol("Transliterate");

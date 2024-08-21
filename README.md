@@ -2,6 +2,7 @@
 
 A demo of the new [Wolfram Language Runtime](https://writings.stephenwolfram.com/2024/07/yet-more-new-ideas-and-new-functions-launching-version-14-1-of-wolfram-language-mathematica/#standalone-wolfram-language-applications) written in [Zig](https://ziglang.org).
 
+I wrote a Wolfram community post expanding on the details [Wolfram Language Runtime (SDK) demo in Zig](https://community.wolfram.com/groups/-/m/t/3252532).
 
 ## Demo
 
