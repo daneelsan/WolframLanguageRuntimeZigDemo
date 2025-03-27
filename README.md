@@ -6,57 +6,55 @@ I wrote a Wolfram community post expanding on the details [Wolfram Language Runt
 
 ## Demo
 
-We will create a standalone executable that runs the [Transliterate](https://reference.wolfram.com/language/ref/Transliterate.html) function from Wolfram Language.
+We will create two standalone executables that run the [Transliterate](https://reference.wolfram.com/language/ref/Transliterate.html) function from Wolfram Language.
+The executables are written in C and Zig.
+
+### Build
+
+The `zig build` command will build both the C and the Zig executables:
+```shell
+$ zig build --summary all
+Build Summary: 5/5 steps succeeded
+install success
+├─ install transliterate-zig success
+│  └─ zig build-exe transliterate-zig Debug native cached 45ms MaxRSS:36M
+└─ install transliterate-c success
+   └─ zig build-exe transliterate-c Debug native cached 45ms MaxRSS:36M
+```
+
+By default, the executables are stored in `zig-out/bin`:
+```shell
+$ ls zig-out/bin                                                                                                                                                   ─╯
+transliterate-c   transliterate-zig
+```
 
 ### C
 
-```shell
-$ zig cc main.c -o transliterate-c \
-	-L"/Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplicationsSDK/MacOSX-x86-64/" \
-	-I"/Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplicationsSDK/MacOSX-x86-64/" \
-	-lstdc++ \
-	-lStandaloneApplicationsSDK \
-	-target x86_64-macos
-```
-
-Notice that even tough I'm compiling in ARM64 (see the section [Prerequisites](#prerequisites)), I'm targeting the `x86_64-macos` architecture.
-This is because there is a bug in the current MacOSX-ARM64 `StandaloneApplicationsSDK` library; though should be fixed soon.
-The executable will still be able to run because of Rosetta.
-
 Now that the executable is compiled, see the usage:
 ```shell
-$ ./transliterate-c
+$ ./zig-out/bin/transliterate-c
 Usage: ./transliterate-c "input"
 ```
 
 Use the executable:
 ```shell
-$ ./transliterate-c 'しんばし'
+$ ./zig-out/bin/transliterate-c 'しんばし'
 shinbashi
 ```
 
 ### Zig
 
-```shell
-$ zig build-exe main.zig --name transliterate-zig \
-	-L"/Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplicationsSDK/MacOSX-x86-64/" \
-	-lStandaloneApplicationsSDK \
-	-lc++ \
-	-target x86_64-macos
-```
-Again, notice we are targeting `x86_64-macos` (as explained in the section above).
-
-Instead of specifying where the header library is (as is the case for the C demo), we are using our handwritten Zig package: [wlr.zig](./wlr.zig).
+Instead of specifying where the C header library is (see [build.zig](./build.zig)), we are using a handwritten Zig package: [WolframLanguageRuntime.zig](./src/WolframLanguageRuntime.zig).
 
 Now that the executable is compiled, see the usage:
 ```shell
-$ ./transliterate-zig
+$ ./zig-out/bin/transliterate-zig
 Usage: ./transliterate-zig "input"
 ```
 
 Use the executable:
 ```shell
-$ ./transliterate-zig 'しんばし'
+$ ./zig-out/bin/transliterate-zig 'しんばし'
 shinbashi
 ```
 
@@ -67,7 +65,7 @@ shinbashi
 Tested on:
 ```shell
 $ uname -a
-Darwin m6502.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  1 20:12:58 PDT 2024; root:xnu-10063.121.3~5/RELEASE_ARM64_T6000 arm64
+Darwin mac.lan 24.2.0 Darwin Kernel Version 24.2.0: Fri Dec  6 19:03:40 PST 2024; root:xnu-11215.61.5~2/RELEASE_ARM64_T6041 arm64
 ```
 
 ### Wolfram Language version
@@ -75,13 +73,7 @@ Darwin m6502.local 23.5.0 Darwin Kernel Version 23.5.0: Wed May  1 20:12:58 PDT 
 Tested on:
 ```Mathematica
 In[]:= $Version
-Out[]= "14.1.0 for Mac OS X ARM (64-bit) (July 16, 2024)"
-```
-
-Another thing to make sure is to rename the SDK library found in `"/Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplicationsSDK/MacOSX-x86-64/"` to have the `lib` prefix (libraries are expected to have them in Unix-like systems).
-Otherwise, `zig cc` and `zig build-exe` won't be able to find the library with `-lStandaloneApplicationsSDK`.
-```shell
-$ mv /Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplicationsSDK/MacOSX-x86-64/StandaloneApplicationsSDK.a /Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplicationsSDK/MacOSX-x86-64/libStandaloneApplicationsSDK.a
+Out[]= "14.3.0 for Mac OS X ARM (64-bit) (March 26, 2025)"
 ```
 
 ### Zig version
@@ -89,7 +81,7 @@ $ mv /Applications/Wolfram.app/Contents/SystemFiles/Components/StandaloneApplica
 Tested on:
 ```shell
 $ zig version
-0.14.0-dev.823+624fa8523
+0.14.0
 ```
 
 Zig is not on version [1.0](https://github.com/ziglang/zig/milestone/2).
@@ -100,3 +92,4 @@ The language is in constant development and some things might break in the futur
 - [Yet More New Ideas and New Functions: Launching Version 14.1 of Wolfram Language & Mathematica - Standalone Wolfram Language Applications!](https://writings.stephenwolfram.com/2024/07/yet-more-new-ideas-and-new-functions-launching-version-14-1-of-wolfram-language-mathematica/#standalone-wolfram-language-applications)
 - [Zig Language Reference](https://ziglang.org/documentation/)
 - [Zig Standard Library](https://ziglang.org/documentation/master/std/)
+- [Expression API rough documentation](http://files.wolfram.com/temp-store/ccooley/june/apidefinition_8h.html)

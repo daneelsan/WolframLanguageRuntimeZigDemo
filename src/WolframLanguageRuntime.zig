@@ -108,6 +108,9 @@ pub const c = struct {
         layout_dir: [*:0]const u8,
         configuration: ?*wlr_runtime_conf,
     ) wlr_err_t;
+
+    // WLR_ATTRIBUTE void wlr_CloseRuntime(void);
+    pub extern fn wlr_CloseRuntime() void;
 };
 
 pub const Error = error{
@@ -318,5 +321,9 @@ pub const SDK = struct {
             &c_runtime_conf,
         );
         try checkCError(c_error);
+    }
+
+    pub fn closeRuntime() void {
+        c.wlr_CloseRuntime();
     }
 };

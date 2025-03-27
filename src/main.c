@@ -10,11 +10,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	wlr_runtime_conf conf;
-	wlr_InitializeRuntimeConfiguration(&conf);
-	conf.containmentSetting = WLR_UNCONTAINED;
-
-	wlr_err_t err0 = WLR_SDK_START_RUNTIME(WLR_EXECUTABLE, WLR_LICENSE_OR_SIGNED_CODE_MODE, "/Applications/Wolfram.app/Contents", &conf);
+	wlr_err_t err0 = WLR_SDK_START_RUNTIME(WLR_EXECUTABLE, WLR_LICENSE_OR_SIGNED_CODE_MODE, "/Applications/Wolfram.app/Contents", NULL);
 		if (err0 != WLR_SUCCESS) {
 		printf("%s (error: %d)\n", "SDK failed to start correctly", err0);
 		return 1;

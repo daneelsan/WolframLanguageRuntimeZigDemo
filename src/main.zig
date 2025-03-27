@@ -1,17 +1,20 @@
 const std = @import("std");
-const wlr = @import("wlr.zig");
+const wlr = @import("WolframLanguageRuntime");
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa: std.heap.DebugAllocator(.{}) = .init;
     const allocator = gpa.allocator();
 
     var arg_iter = try std.process.argsWithAllocator(allocator);
     defer arg_iter.deinit();
 
+    const stdout = std.io.getStdOut().writer();
+
+    // Skip the name of the executable
     _ = arg_iter.next().?;
 
     const input = arg_iter.next() orelse {
-        std.debug.print("Usage: ./transliterate-zig \"input\"\n", .{});
+        try stdout.print("Usage: ./transliterate-zig \"input\"\n", .{});
         return;
     };
 
@@ -21,6 +24,7 @@ pub fn main() !void {
         .layout_dir = "/Applications/Wolfram.app/Contents",
         .containment_mode = .Uncontained,
     });
+    defer wlr.SDK.closeRuntime();
 
     const head = try wlr.Expr.symbol("Transliterate");
     const arg = try wlr.Expr.string(input);
@@ -29,5 +33,6 @@ pub fn main() !void {
 
     const buffer = try res.stringData();
     defer wlr.release(buffer);
-    std.debug.print("{s}\n", .{buffer});
+
+    try stdout.print("{s}\n", .{buffer});
 }

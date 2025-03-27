@@ -1,3 +1,4 @@
 tmp/
 .zig-cache/
+zig-out/
 .vscode/
